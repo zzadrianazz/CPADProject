@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CPADProject.PlayPage" BackgroundColor="Black">
+
+    <!--<a href="https://www.flaticon.com/free-icons/auto" title="auto icons">Auto icons created by Ylivdesign - Flaticon</a>-->
+    <!--<a href="https://www.flaticon.com/free-icons/apartment" title="apartment icons">Apartment icons created by monkik - Flaticon</a>-->
+    <!--<a href="https://www.flaticon.com/free-icons/truck" title="truck icons">Truck icons created by Freepik - Flaticon</a>-->
+    <!--<a href="https://www.flaticon.com/free-icons/yellow" title="yellow icons">Yellow icons created by Ylivdesign - Flaticon</a>-->
+
+    <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header with Score and Lives -->
+            <Grid Grid.Row="0" BackgroundColor="DimGray" Padding="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label x:Name="ScoreLabel" 
+                Text="{Binding Score, StringFormat='Score : {0}'}" 
+                TextColor="White" 
+                FontSize="20" 
+                FontAttributes="Bold"
+                VerticalOptions="Center"
+                HorizontalOptions="Start"/>
+
+            <Button x:Name="StartButton"
+                 Grid.Column="1"
+                 Text="START"
+                 BackgroundColor="LightPink"
+                 TextColor="White"
+                 FontAttributes="Bold"
+                 WidthRequest="100"
+                 Clicked="startBtnClicked"/>
+
+            <Label x:Name="LivesLabel" 
+                Grid.Column="2"
+                Text="Lives: 3" 
+                TextColor="Red" 
+                FontSize="20" 
+                FontAttributes="Bold"
+                VerticalOptions="Center"
+                HorizontalOptions="End"/>
+            </Grid>
+
+            <!--sky graphics-->
+            <GraphicsView x:Name="SkyView" 
+              Grid.Row="1" 
+              ZIndex="-1"
+              InputTransparent="True"/>
+
+        <!-- Game Canvas -->
+            <AbsoluteLayout x:Name="GameCanvas" 
+                    Grid.Row="1">
+                <!-- Gesture recognizers added in code-behind -->
+            </AbsoluteLayout>
+
+            <!-- Game Over Overlay -->
+            <Grid x:Name="GameOverOverlay" 
+           Grid.RowSpan="2"
+           BackgroundColor="#CC000000"
+           IsVisible="False">
+                <VerticalStackLayout HorizontalOptions="Center" 
+                            VerticalOptions="Center"
+                            Spacing="20">
+                    <Label Text="GAME OVER" 
+                    TextColor="Red" 
+                    FontSize="48" 
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"/>
+                    <Button Text="PLAY AGAIN"
+                    BackgroundColor="LightPink"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    WidthRequest="150"/>
+                    <!--Clicked="OnPlayAgainClicked"-->
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+</ContentPage>

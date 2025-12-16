@@ -1,20 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CPADProject.MainPage">
+             x:Class="CPADProject.MainPage"
+             Title=""
+             BackgroundColor="DimGray">
 
     <ScrollView>
         <VerticalStackLayout>
-            <Label x:Name="menulbl" Text="Traffic Escape" TextColor="LimeGreen" FontSize="30" 
-                   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+            <Label x:Name="menulbl" Text="Traffic Escape" TextColor="White" FontSize="30" 
+                   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Padding="20"/>
+            <Label x:Name="instructionslbl" Text="Welcome to Traffic Escape! Enjoy a nice ride while avoinding crashing into cars that are coming in your direction! Good Luck!!"
+                   TextColor="White" FontSize="15" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
 
-            <Button x:Name="startBtn" Text="Start Game" BackgroundColor="Gold" 
+            <Button x:Name="startBtn" Text="Start Game" Clicked="StartBtn_Clicked" BackgroundColor="LightPink" 
                     HeightRequest="70" WidthRequest="300" Margin="10"/>
-            <Button x:Name="carBtn" Text="Cusomize Car" BackgroundColor="Gold" 
+            <Button x:Name="carBtn" Text="Customize Car" BackgroundColor="LightPink" 
         HeightRequest="70" WidthRequest="300" Margin="10"/>
-            <Button x:Name="statsBtn" Text="Check Stats" BackgroundColor="Gold" 
+            <Button x:Name="statsBtn" Text="Check Stats" BackgroundColor="LightPink" 
         HeightRequest="70" WidthRequest="300" Margin="10"/>
-            <Button x:Name="uploadBtn" Text="Upload Your Own Car" BackgroundColor="Gold" 
+            <Button x:Name="uploadBtn" Text="Upload Your Own Car" BackgroundColor="LightPink" 
         HeightRequest="70" WidthRequest="300" Margin="10"/>
 
         </VerticalStackLayout>
