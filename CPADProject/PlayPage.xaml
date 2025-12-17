@@ -25,11 +25,12 @@
 
                 <Label x:Name="ScoreLabel" 
                 Text="{Binding Score, StringFormat='Score : {0}'}" 
-                TextColor="White" 
+                TextColor="Red" 
                 FontSize="20" 
                 FontAttributes="Bold"
                 VerticalOptions="Center"
                 HorizontalOptions="Start"/>
+
 
             <Button x:Name="StartButton"
                  Grid.Column="1"
@@ -48,15 +49,6 @@
                 FontAttributes="Bold"
                 VerticalOptions="Center"
                 HorizontalOptions="End"/>
-
-            <Label x:Name="CoinsLabel" 
-                Grid.Column="2"
-                Text="Coins: 0" 
-                TextColor="Red" 
-                FontSize="20" 
-                FontAttributes="Bold"
-                VerticalOptions="Center"
-                HorizontalOptions="Start"/>
         </Grid>
 
             <!--sky graphics-->

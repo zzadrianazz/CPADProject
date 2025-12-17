@@ -41,7 +41,7 @@ public partial class PlayPage : ContentPage
         set
         {
             score = value;
-            //OnPropertyChanged()?
+            //OnPropertyChanged();
         }
     }
 
@@ -185,7 +185,7 @@ public partial class PlayPage : ContentPage
             {
                 GameCanvas.Children.Remove(coin[i].Visual);
                 coin.RemoveAt(i);
-                score += 10;
+                GetCoins();
             }
         }
         }
@@ -202,9 +202,16 @@ public partial class PlayPage : ContentPage
         }
     }
 
+    private void GetCoins()
+    {
+        score += 10;
+        UpdateUI();
+    }
+
     private void UpdateUI()
     {
         LivesLabel.Text = $"Lives: {lives}";
+        ScoreLabel.Text = $"Score: {score}";
     }
 
     private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
