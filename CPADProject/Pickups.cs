@@ -12,23 +12,30 @@ namespace CPADProject
         public double Y { get; private set; }
         public double Size { get; private set; } = 70;
         public Image Visual { get; private set; }
-        private Random random = new Random();
+        public PickupType Type { get; private set; }
 
-        private double velocityX;
-        private double velocityY;
         private double speed = 3.0;
 
-        public Pickups(double x, double y)
+        public enum PickupType
+        {
+            Coin,
+            Fuel
+        }
+        public Pickups(double x, double y, PickupType type)
         {
             X = x;
             Y = y;
+            Type = type;
 
-            string coinIMG = "coin.png";
-            Visual = new Image()
+            string image = type == PickupType.Coin
+                ? "coin.png"
+                : "fuel.png";
+
+            Visual = new Image
             {
-                Source = coinIMG,
+                Source = image,
                 WidthRequest = Size,
-                HeightRequest = Size,
+                HeightRequest = Size
             };
         }
 

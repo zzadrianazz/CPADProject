@@ -8,6 +8,7 @@
     <!--<a href="https://www.flaticon.com/free-icons/truck" title="truck icons">Truck icons created by Freepik - Flaticon</a>-->
     <!--<a href="https://www.flaticon.com/free-icons/yellow" title="yellow icons">Yellow icons created by Ylivdesign - Flaticon</a>-->
     <!--<a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Coin icons created by NajmunNahar - Flaticon</a>-->
+    <!--<a href="https://www.flaticon.com/free-icons/fuel" title="fuel icons">Fuel icons created by Freepik - Flaticon</a>-->
 
     <Grid>
             <Grid.RowDefinitions>
@@ -49,6 +50,13 @@
                 FontAttributes="Bold"
                 VerticalOptions="Center"
                 HorizontalOptions="End"/>
+
+            <Label x:Name="DistanceLabel" 
+                   Text="Distance: 0 m" 
+                   VerticalOptions="Center"
+                   HorizontalOptions= "EndAndExpand"
+                   TextColor="White" 
+                   FontAttributes="Bold"/>
         </Grid>
 
             <!--sky graphics-->

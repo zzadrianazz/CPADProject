@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Layouts;
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Graphics;
-
+using Microsoft.Maui.Layouts;
+using System;
+using System.Collections.Generic;
 using System.Text.Json;
+using static CPADProject.Pickups;
 
 
 
@@ -17,6 +16,7 @@ public partial class PlayPage : ContentPage
     private Player player;
     private List<Enemy> enemies = new();
     private List<Pickups> coin = new();
+    private List<Pickups> fuel = new();
     private IDispatcherTimer gameTimer;
 
     private Drawing sky;
@@ -24,16 +24,20 @@ public partial class PlayPage : ContentPage
     private double skyProgress = 0;
 
     private IDispatcherTimer enemySpawnTimer;
-    private IDispatcherTimer coinSpawnTimer;
+    private IDispatcherTimer pickupSpawnTimer;
+    private IDispatcherTimer fuelEffectTimer;
 
     private int score = 0;
     private int lives = 3;
     private bool gameRun = false;
+    int distance = 0;
 
     private double canvasWidth;
     private double canvasHeight;
     private double lastPanX = 0;
     private double lastPanY = 0;
+    private double moveSpeed = 1;
+
 
     public int gameScore
     {
@@ -70,7 +74,7 @@ public partial class PlayPage : ContentPage
             sky.daylight = skyProgress;
 
             // Road + trees + buildings scroll
-            sky.scrollEffect += 4;   // adjust speed
+            sky.scrollEffect += 4 * moveSpeed;   // adjust speed
 
             SkyView.Invalidate();
         };
@@ -106,7 +110,7 @@ public partial class PlayPage : ContentPage
         StartButton.IsEnabled = false;
         gameTimer.Start();
         enemySpawnTimer.Start();
-        coinSpawnTimer.Start();
+        pickupSpawnTimer.Start();
 
         player = new Player(canvasWidth / 2, canvasHeight / 2);
         GameCanvas.Children.Add(player.Visual);
@@ -132,10 +136,10 @@ public partial class PlayPage : ContentPage
         enemySpawnTimer.Tick += OnEnemySpawn;
         enemySpawnTimer.IsRepeating = true;
 
-        coinSpawnTimer = Dispatcher.CreateTimer();
-        coinSpawnTimer.Interval = TimeSpan.FromSeconds(10); //coins spawn every 10 seconds
-        coinSpawnTimer.Tick += OnCoinsSpawn;
-        coinSpawnTimer.IsRepeating = true;
+        pickupSpawnTimer = Dispatcher.CreateTimer();
+        pickupSpawnTimer.Interval = TimeSpan.FromSeconds(5);
+        pickupSpawnTimer.Tick += OnPickupSpawn;
+        pickupSpawnTimer.IsRepeating = true;
 
 
 
@@ -188,7 +192,32 @@ public partial class PlayPage : ContentPage
                 GetCoins();
             }
         }
+
+        for (int i = fuel.Count - 1; i >= 0; i--)
+        {
+            fuel[i].Update(canvasWidth, canvasHeight);
+
+            AbsoluteLayout.SetLayoutBounds(fuel[i].Visual,
+                new Rect(
+                    fuel[i].X - fuel[i].Size / 2,
+                    fuel[i].Y - fuel[i].Size / 2,
+                    fuel[i].Size,
+                    fuel[i].Size
+                )
+            );
+
+            if (CheckCollision(player.X, player.Y, player.Size,
+                               fuel[i].X, fuel[i].Y, fuel[i].Size))
+            {
+                GameCanvas.Children.Remove(fuel[i].Visual);
+                fuel.RemoveAt(i);
+                GetFuel();
+            }
         }
+
+        distance++;
+        if (distance % 10 == 0) UpdateUI();
+    }
 
 
     private void LoseLife()
@@ -208,10 +237,28 @@ public partial class PlayPage : ContentPage
         UpdateUI();
     }
 
+    private void GetFuel()
+    {
+        moveSpeed = 2.0; // boosted speed
+
+        fuelEffectTimer?.Stop();
+        fuelEffectTimer = Dispatcher.CreateTimer();
+        fuelEffectTimer.Interval = TimeSpan.FromSeconds(5);
+
+        fuelEffectTimer.Tick += (s, e) =>
+        {
+            moveSpeed = 1.0; // back to normal
+            fuelEffectTimer.Stop();
+        };
+
+        fuelEffectTimer.Start();
+    }
+
     private void UpdateUI()
     {
         LivesLabel.Text = $"Lives: {lives}";
         ScoreLabel.Text = $"Score: {score}";
+        DistanceLabel.Text = $"Distance: {distance} m";
     }
 
     private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
@@ -304,10 +351,14 @@ public partial class PlayPage : ContentPage
                Math.Abs(y1 - y2) < (size1 + size2) * 0.55;
     }
 
-    private void OnCoinsSpawn(object sender, EventArgs e)
+    private void OnPickupSpawn(object sender, EventArgs e)
     {
         if (!gameRun) return;
-        SpawnCoin();
+
+        if (Random.Shared.NextDouble() < 0.7)
+            SpawnCoin();   // 70%
+        else
+            SpawnFuel();   // 30%
     }
 
     private void SpawnCoin()
@@ -328,7 +379,7 @@ public partial class PlayPage : ContentPage
 
         //bus spawn above screen  
         double y = 65;
-        Pickups coins = new Pickups(x, y);
+        Pickups coins = new Pickups(x, y, PickupType.Coin);
 
         coin.Add(coins);
         GameCanvas.Children.Add(coins.Visual);
@@ -344,12 +395,48 @@ public partial class PlayPage : ContentPage
         );
     }
 
+
+    private void SpawnFuel()
+    {
+        Random rand = new Random();
+
+        //match Drawing.cs road logic:
+        double roadWidth = canvasWidth * 0.55;
+        double roadLeft = (canvasWidth - roadWidth) / 2;
+        double roadRight = roadLeft + roadWidth;
+
+        //divide road into 3 equal lanes  
+        double laneWidth = roadWidth / 3;
+
+        int lane = rand.Next(3); // 0, 1, or 2
+
+        double x = roadLeft + lane * laneWidth + laneWidth / 2;
+
+        //bus spawn above screen  
+        double y = 65;
+        Pickups getFuel = new Pickups(x, y, PickupType.Fuel);
+
+        fuel.Add(getFuel);
+        GameCanvas.Children.Add(getFuel.Visual);
+
+        //position visually  
+        AbsoluteLayout.SetLayoutBounds(getFuel.Visual,
+            new Rect(
+                getFuel.X - getFuel.Size / 2,
+                getFuel.Y - getFuel.Size,
+                getFuel.Size,
+                getFuel.Size * 2
+            )
+        );
+    }
+
+
     private void EndGame()
     {
         gameRun = false;
         gameTimer?.Stop();
         enemySpawnTimer?.Stop();
-        coinSpawnTimer?.Stop();
+        pickupSpawnTimer?.Stop();
 
         GameOverOverlay.IsVisible = true;
     }
