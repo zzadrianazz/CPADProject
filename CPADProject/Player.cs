@@ -16,6 +16,8 @@ namespace CPADProject
         public Image Visual { get; set; }
 
 
+
+
         public double Rotation
         {
             get

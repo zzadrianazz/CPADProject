@@ -7,6 +7,7 @@
     <!--<a href="https://www.flaticon.com/free-icons/apartment" title="apartment icons">Apartment icons created by monkik - Flaticon</a>-->
     <!--<a href="https://www.flaticon.com/free-icons/truck" title="truck icons">Truck icons created by Freepik - Flaticon</a>-->
     <!--<a href="https://www.flaticon.com/free-icons/yellow" title="yellow icons">Yellow icons created by Ylivdesign - Flaticon</a>-->
+    <!--<a href="https://www.flaticon.com/free-icons/coin" title="coin icons">Coin icons created by NajmunNahar - Flaticon</a>-->
 
     <Grid>
             <Grid.RowDefinitions>
@@ -47,7 +48,16 @@
                 FontAttributes="Bold"
                 VerticalOptions="Center"
                 HorizontalOptions="End"/>
-            </Grid>
+
+            <Label x:Name="CoinsLabel" 
+                Grid.Column="2"
+                Text="Coins: 0" 
+                TextColor="Red" 
+                FontSize="20" 
+                FontAttributes="Bold"
+                VerticalOptions="Center"
+                HorizontalOptions="Start"/>
+        </Grid>
 
             <!--sky graphics-->
             <GraphicsView x:Name="SkyView" 

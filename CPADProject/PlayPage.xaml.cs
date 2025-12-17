@@ -16,6 +16,7 @@ public partial class PlayPage : ContentPage
 {
     private Player player;
     private List<Enemy> enemies = new();
+    private List<Pickups> coin = new();
     private IDispatcherTimer gameTimer;
 
     private Drawing sky;
@@ -23,6 +24,7 @@ public partial class PlayPage : ContentPage
     private double skyProgress = 0;
 
     private IDispatcherTimer enemySpawnTimer;
+    private IDispatcherTimer coinSpawnTimer;
 
     private int score = 0;
     private int lives = 3;
@@ -104,6 +106,7 @@ public partial class PlayPage : ContentPage
         StartButton.IsEnabled = false;
         gameTimer.Start();
         enemySpawnTimer.Start();
+        coinSpawnTimer.Start();
 
         player = new Player(canvasWidth / 2, canvasHeight / 2);
         GameCanvas.Children.Add(player.Visual);
@@ -128,6 +131,13 @@ public partial class PlayPage : ContentPage
         enemySpawnTimer.Interval = TimeSpan.FromSeconds(2); //enemy spawns every 2 seconds
         enemySpawnTimer.Tick += OnEnemySpawn;
         enemySpawnTimer.IsRepeating = true;
+
+        coinSpawnTimer = Dispatcher.CreateTimer();
+        coinSpawnTimer.Interval = TimeSpan.FromSeconds(10); //coins spawn every 10 seconds
+        coinSpawnTimer.Tick += OnCoinsSpawn;
+        coinSpawnTimer.IsRepeating = true;
+
+
 
     }
 
@@ -156,7 +166,29 @@ public partial class PlayPage : ContentPage
                 continue;
             }
         }
-    }
+
+        for (int i = coin.Count - 1; i >= 0; i--)
+        {
+            coin[i].Update(canvasWidth, canvasHeight);
+
+            AbsoluteLayout.SetLayoutBounds(coin[i].Visual,
+                new Rect(
+                    coin[i].X - coin[i].Size / 2,
+                    coin[i].Y - coin[i].Size / 2,
+                    coin[i].Size,
+                    coin[i].Size
+                )
+            );
+
+            if (CheckCollision(player.X, player.Y, player.Size,
+                               coin[i].X, coin[i].Y, coin[i].Size))
+            {
+                GameCanvas.Children.Remove(coin[i].Visual);
+                coin.RemoveAt(i);
+                score += 10;
+            }
+        }
+        }
 
 
     private void LoseLife()
@@ -261,28 +293,48 @@ public partial class PlayPage : ContentPage
     private bool CheckCollision(double x1, double y1, double size1,
                                double x2, double y2, double size2)
     {
-        //player hitbox
-        double playerWidth = size1 * 0.8;
-        double playerHeight = size1 * 1.3;
-        double playerLeft = x1 - playerWidth / 2;
-        double playerRight = x1 + playerWidth / 2;
+        return Math.Abs(x1 - x2) < (size1 + size2) * 0.20 &&
+               Math.Abs(y1 - y2) < (size1 + size2) * 0.55;
+    }
 
-        //extends up
-        double playerTop = y1 - playerHeight * 0.7;
-        double playerBottom = y1 + playerHeight * 0.3;
+    private void OnCoinsSpawn(object sender, EventArgs e)
+    {
+        if (!gameRun) return;
+        SpawnCoin();
+    }
 
-        //enemy hitbox
-        double enemyWidth = size2;
-        double enemyHeight = size2 * 2;
-        double enemyLeft = x2 - enemyWidth / 2;
-        double enemyRight = x2 + enemyWidth / 2;
-        double enemyTop = y2 - enemyHeight;
-        double enemyBottom = y2;
+    private void SpawnCoin()
+    {
+        Random rand = new Random();
 
-        return playerLeft < enemyRight &&
-               playerRight > enemyLeft &&
-               playerTop < enemyBottom &&
-               playerBottom > enemyTop;
+        //match Drawing.cs road logic:
+        double roadWidth = canvasWidth * 0.55;
+        double roadLeft = (canvasWidth - roadWidth) / 2;
+        double roadRight = roadLeft + roadWidth;
+
+        //divide road into 3 equal lanes  
+        double laneWidth = roadWidth / 3;
+
+        int lane = rand.Next(3); // 0, 1, or 2
+
+        double x = roadLeft + lane * laneWidth + laneWidth / 2;
+
+        //bus spawn above screen  
+        double y = 65;
+        Pickups coins = new Pickups(x, y);
+
+        coin.Add(coins);
+        GameCanvas.Children.Add(coins.Visual);
+
+        //position visually  
+        AbsoluteLayout.SetLayoutBounds(coins.Visual,
+            new Rect(
+                coins.X - coins.Size / 2,
+                coins.Y - coins.Size,
+                coins.Size,
+                coins.Size * 2
+            )
+        );
     }
 
     private void EndGame()
@@ -290,6 +342,7 @@ public partial class PlayPage : ContentPage
         gameRun = false;
         gameTimer?.Stop();
         enemySpawnTimer?.Stop();
+        coinSpawnTimer?.Stop();
 
         GameOverOverlay.IsVisible = true;
     }

@@ -6,28 +6,27 @@ using System.Threading.Tasks;
 
 namespace CPADProject
 {
-    public class Enemy
+    public class Pickups
     {
-        public double X {get; private set;}
-        public double Y {get; private set;}
-        public double Size { get; private set; } = 150;
-        public Image Visual {get; private set;}
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Size { get; private set; } = 70;
+        public Image Visual { get; private set; }
         private Random random = new Random();
 
         private double velocityX;
         private double velocityY;
         private double speed = 3.0;
 
-        public Enemy(double x, double y)
+        public Pickups(double x, double y)
         {
             X = x;
             Y = y;
 
-            int whichBus = random.Next(1, 4);
-            string busIMG = $"bus{whichBus}.png";
+            string coinIMG = "coin.png";
             Visual = new Image()
             {
-                Source = busIMG,
+                Source = coinIMG,
                 WidthRequest = Size,
                 HeightRequest = Size,
             };
@@ -39,3 +38,4 @@ namespace CPADProject
         }
     }
 }
+

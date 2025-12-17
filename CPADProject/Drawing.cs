@@ -49,7 +49,7 @@ namespace CPADProject
             float stripeHeight = 70; //length of stripe
             float stripeGap = 90; //gap between stripes
             float cycle = stripeHeight + stripeGap; //repeat of length
-            float offset = (float)(scrollEffect % cycle); //movement 
+            float offset = (float)((cycle - (scrollEffect % cycle)) % cycle); //movement 
 
             //loop to draw centered stripes on middle of the road
             for (float y = -offset; y < h; y += cycle)
@@ -71,15 +71,25 @@ namespace CPADProject
             float sideCycle = sideObjectHeight + spacing;
             float sideOffset = (float)(scrollEffect % sideCycle);
 
-            for (float y = -sideOffset; y < h; y += sideCycle)
+            int lanes = 4;
+
+            //distance between lane dividers
+            float laneWidth = roadWidth / lanes;
+
+            //loop to get 4 lanes
+            for (int lane = 1; lane < lanes; lane++)
             {
-                Visual = new Image()
+                float laneX = roadLeft + lane * laneWidth;
+
+                for (float y = -offset; y < h; y += cycle)
                 {
-                    Source = "apartment.png",
-                    
-                    WidthRequest = sideObjectWidth,
-                    HeightRequest = sideObjectHeight,
-                };
+                    canvas.DrawLine(
+                        laneX,
+                        y,
+                        laneX,
+                        y + stripeHeight
+                    );
+                }
             }
         }
         
